@@ -1,5 +1,14 @@
 import React, {useEffect} from 'react';
-import {SafeAreaView, Text, StatusBar, NativeEventEmitter} from 'react-native';
+import {
+  SafeAreaView,
+  View,
+  Text,
+  StatusBar,
+  NativeEventEmitter,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+} from 'react-native';
 
 const NotificationHub = require('react-native-azurenotificationhub');
 const PushNotificationEmitter = new NativeEventEmitter(NotificationHub);
@@ -24,22 +33,171 @@ const channelImportance = 3; // The channel's importance (NotificationManager.IM
 const channelShowBadge = true;
 const channelEnableLights = true;
 const channelEnableVibration = true;
-const template =
-  '<tile><visual> <binding template="ToastText01"><text id="1">{\'Hi, \' + $(name)}</text> </binding>  </visual></tile>'; // Notification hub templates:
+const template = '{"data":{"message":"$(message)"}}'; // Notification hub templates:
 // https://docs.microsoft.com/en-us/azure/notification-hubs/notification-hubs-templates-cross-platform-push-messages
-const templateName = 'Introduction'; // The template's name
+const templateName = 'Sample Template'; // The template's name
 
 const App = () => {
+  const _onAzureNotificationHubRegistered = registrationID => {
+    console.warn('RegistrationID: ' + registrationID);
+  };
+
+  const _onAzureNotificationHubRegisteredError = error => {
+    console.warn('Error: ' + error);
+  };
+
+  const _onRemoteNotification = notification => {
+    console.log(notification);
+  };
+
+  function register() {
+    PushNotificationEmitter.addListener(
+      EVENT_AZURE_NOTIFICATION_HUB_REGISTERED,
+      _onAzureNotificationHubRegistered,
+    );
+    PushNotificationEmitter.addListener(
+      EVENT_AZURE_NOTIFICATION_HUB_REGISTERED_ERROR,
+      _onAzureNotificationHubRegisteredError,
+    );
+
+    NotificationHub.register({
+      connectionString,
+      hubName,
+      senderID,
+      tags,
+      channelName,
+      channelImportance,
+      channelShowBadge,
+      channelEnableLights,
+      channelEnableVibration,
+    })
+      .then(res => console.warn(res))
+      .catch(reason => console.warn(reason));
+  }
+
+  function registerTemplate() {
+    PushNotificationEmitter.addListener(
+      EVENT_AZURE_NOTIFICATION_HUB_REGISTERED,
+      _onAzureNotificationHubRegistered,
+    );
+    PushNotificationEmitter.addListener(
+      EVENT_AZURE_NOTIFICATION_HUB_REGISTERED_ERROR,
+      _onAzureNotificationHubRegisteredError,
+    );
+
+    NotificationHub.registerTemplate({
+      connectionString,
+      hubName,
+      senderID,
+      template,
+      templateName,
+      tags,
+      channelName,
+      channelImportance,
+      channelShowBadge,
+      channelEnableLights,
+      channelEnableVibration,
+    })
+      .then(res => console.warn(res))
+      .catch(reason => console.warn(reason));
+  }
+
+  function getInitialNotification() {
+    NotificationHub.getInitialNotification()
+      .then(res => console.warn(res))
+      .catch(reason => console.warn(reason));
+  }
+
+  function getUUID() {
+    NotificationHub.getUUID(false)
+      .then(res => console.warn(res))
+      .catch(reason => console.warn(reason));
+  }
+
+  function isNotificationEnabledOnOSLevel() {
+    NotificationHub.isNotificationEnabledOnOSLevel()
+      .then(res => console.warn(res))
+      .catch(reason => console.warn(reason));
+  }
+
+  function unregister() {
+    NotificationHub.unregister()
+      .then(res => console.warn(res))
+      .catch(reason => console.warn(reason));
+  }
+
+  function unregisterTemplate() {
+    NotificationHub.unregisterTemplate(templateName)
+      .then(res => console.warn(res))
+      .catch(reason => console.warn(reason));
+  }
+
   useEffect(() => {
-    console.log('Mounted');
+    PushNotificationEmitter.addListener(
+      EVENT_REMOTE_NOTIFICATION_RECEIVED,
+      _onRemoteNotification,
+    );
   }, []);
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: '#F5FCFF',
+    },
+    welcome: {
+      fontSize: 20,
+      textAlign: 'center',
+      margin: 10,
+    },
+    instructions: {
+      textAlign: 'center',
+      color: '#333333',
+      marginBottom: 5,
+    },
+  });
+
   return (
-    <>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <Text>Hello World</Text>
-      </SafeAreaView>
-    </>
+    <View style={styles.container}>
+      <TouchableOpacity onPress={() => register()}>
+        <View style={styles.button}>
+          <Text style={styles.buttonText}>Register</Text>
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => registerTemplate()}>
+        <View style={styles.button}>
+          <Text style={styles.buttonText}>Register Template</Text>
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => getInitialNotification()}>
+        <View style={styles.button}>
+          <Text style={styles.buttonText}>Get initial notification</Text>
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => getUUID()}>
+        <View style={styles.button}>
+          <Text style={styles.buttonText}>Get UUID</Text>
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => isNotificationEnabledOnOSLevel()}>
+        <View style={styles.button}>
+          <Text style={styles.buttonText}>
+            Check if notification is enabled
+          </Text>
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => unregister()}>
+        <View style={styles.button}>
+          <Text style={styles.buttonText}>Unregister</Text>
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => unregisterTemplate()}>
+        <View style={styles.button}>
+          <Text style={styles.buttonText}>Unregister Template</Text>
+        </View>
+      </TouchableOpacity>
+    </View>
   );
 };
 
