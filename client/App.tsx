@@ -30,7 +30,7 @@ const App = () => {
   return (
     <>
       <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
+      <SafeAreaView style={styles.container}>
         <Text>Press a button to trigger the notification</Text>
         <View style={styles.defaultView}>
           <Button
@@ -44,6 +44,14 @@ const App = () => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonContainer: {
+    marginTop: 20,
+  },
   defaultView: {
     marginTop: 20,
   },
