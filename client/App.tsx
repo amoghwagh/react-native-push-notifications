@@ -1,20 +1,17 @@
-import React from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-  View,
-  Text,
-  StatusBar,
-} from 'react-native';
+/**
+ * Sample React Native App
+ * https://github.com/facebook/react-native
+ *
+ * Generated with the TypeScript template
+ * https://github.com/react-native-community/react-native-template-typescript
+ *
+ * @format
+ */
 
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import React from 'react';
+import {SafeAreaView, StyleSheet, Text, StatusBar} from 'react-native';
+
+import {Colors} from 'react-native/Libraries/NewAppScreen';
 
 declare var global: {HermesInternal: null | {}};
 
