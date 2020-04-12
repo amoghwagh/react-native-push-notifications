@@ -19,6 +19,7 @@ import {
 } from 'react-native';
 
 import {LocalNotification} from './src/LocalPushController';
+import RemotePushController from './src/services/RemotePushController';
 
 declare var global: {HermesInternal: null | {}};
 
@@ -37,6 +38,9 @@ const App = () => {
             title={'Local Push Notification'}
             onPress={handleButtonPress}
           />
+        </View>
+        <View>
+          <RemotePushController />
         </View>
       </SafeAreaView>
     </>
